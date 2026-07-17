@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Find Your PrEP: HIV Prevention Guide</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Inter:wght@400;500;600;700;800&display=swap');
+
+  :root{
+    --navy:#0a1f3c;        /* question banners / headers */
+    --ink:#11203a;
+    --paper:#fbfaf6;
+    --rule:#e3e0d6;
+    --muted:#5a6472;
+    --pill:#1d5fa5;  --pill-s:#e7f0fa;   /* Truvada/Descovy blue */
+    --apre:#c2410c;  --apre-s:#fbeadf;   /* Apretude orange */
+    --yez:#b9145b;   --yez-s:#fce6ef;    /* Yeztugo crimson */
+    --accent:#c0392b;      /* red section labels, matches PDF */
+  }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+  html,body{background:var(--paper);color:var(--ink);font-family:'Inter',system-ui,sans-serif;line-height:1.5;}
+  body{max-width:480px;margin:0 auto;min-height:100vh;padding:0 0 90px;}
+
+  .topbar{position:sticky;top:0;z-index:20;background:var(--paper);padding:16px 20px 10px;border-bottom:1px solid var(--rule);}
+  .brand{font-size:11px;letter-spacing:.16em;text-transform:uppercase;font-weight:700;color:var(--accent);}
+  .progress{height:5px;background:var(--rule);border-radius:10px;margin-top:9px;overflow:hidden;}
+  .progress span{display:block;height:100%;background:var(--accent);width:0;transition:width .35s ease;border-radius:10px;}
+
+  .screen{padding:22px 20px;display:none;animation:fade .3s ease;}
+  .screen.active{display:block;}
+  @keyframes fade{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}
+
+  h1{font-family:'Fraunces',serif;font-weight:600;font-size:28px;line-height:1.05;letter-spacing:-.01em;margin-bottom:10px;}
+  h2{font-family:'Fraunces',serif;font-weight:600;font-size:21px;margin-bottom:6px;line-height:1.12;}
+  .lede{color:var(--muted);font-size:15px;margin-bottom:22px;}
+  .qcount{font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:8px;}
+
+  .opt{display:flex;align-items:center;gap:13px;width:100%;text-align:left;background:#fff;border:1.5px solid var(--rule);border-radius:14px;padding:15px 16px;margin-bottom:11px;cursor:pointer;font-size:15px;color:var(--ink);transition:all .15s;}
+  .opt:active{transform:scale(.985);}
+  .opt .ic{width:8px;height:38px;border-radius:6px;flex-shrink:0;background:var(--pill);}
+  .opt .tx b{display:block;font-weight:600;}
+  .opt .tx small{color:var(--muted);font-size:12.5px;}
+  .opt.skip{border-style:dashed;}
+  .opt.skip .ic{background:var(--rule);}
+  .opt .ic.m-pill{background:var(--pill);} .opt .ic.m-apre{background:var(--apre);}
+  .opt .ic.m-yez{background:var(--yez);} .opt .ic.m-navy{background:var(--navy);}
+  .opt .ic.m-shot{background:linear-gradient(var(--apre) 0 50%, var(--yez) 50% 100%);}
+
+  .btn{display:block;width:100%;background:var(--navy);color:#fff;border:none;border-radius:14px;padding:16px;font-size:16px;font-weight:600;font-family:'Inter';cursor:pointer;margin-top:6px;}
+  .btn:active{transform:scale(.99);}
+  .btn.ghost{background:transparent;color:var(--muted);font-weight:500;font-size:14px;padding:12px;margin-top:2px;}
+
+  .rescard{border:1.5px solid var(--rule);border-radius:16px;padding:18px;margin-bottom:14px;background:#fff;border-top-width:6px;}
+  .rescard.match{box-shadow:0 6px 22px rgba(10,31,60,.13);}
+  .rescard .tag{font-size:11px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;display:inline-block;padding:3px 10px;border-radius:20px;margin-bottom:9px;}
+  .rescard h3{font-family:'Fraunces',serif;font-size:22px;font-weight:600;display:flex;align-items:baseline;gap:8px;}
+  .rescard .gen{font-size:12px;font-style:italic;color:var(--muted);font-family:'Inter';}
+  .rescard .freq{font-size:14px;font-weight:600;margin:4px 0 10px;}
+  .rescard ul{list-style:none;font-size:13.5px;}
+  .rescard li{padding-left:18px;position:relative;margin-bottom:5px;}
+  .rescard li::before{content:"›";position:absolute;left:3px;font-weight:700;}
+  .cp{border-top-color:var(--pill);} .cp .tag{background:var(--pill-s);color:var(--pill);} .cp li::before{color:var(--pill);} .cp h3{color:var(--pill);}
+  .ca{border-top-color:var(--apre);} .ca .tag{background:var(--apre-s);color:var(--apre);} .ca li::before{color:var(--apre);} .ca h3{color:var(--apre);}
+  .cy{border-top-color:var(--yez);} .cy .tag{background:var(--yez-s);color:var(--yez);} .cy li::before{color:var(--yez);} .cy h3{color:var(--yez);}
+
+  .flag{background:var(--yez-s);border-left:4px solid var(--yez);border-radius:0 8px 8px 0;padding:11px 13px;font-size:13px;margin:13px 0;}
+  .flag.blue{background:var(--pill-s);border-color:var(--pill);}
+
+  .costnote{background:#eaf6ee;border:1.5px solid #1e7a45;border-radius:14px;padding:16px 17px;margin:14px 0;}
+  .costnote h3{font-family:'Fraunces',serif;font-size:18px;font-weight:600;color:#1e7a45;margin-bottom:6px;}
+  .costnote p{font-size:13.5px;margin-bottom:4px;}
+  .costnote .btn.ghost{text-align:left;color:#1e7a45;font-weight:600;padding:6px 0;}
+
+  .costcard{border-radius:14px;padding:16px 17px;margin-bottom:12px;border-left:5px solid;}
+  .costcard h3{font-family:'Fraunces',serif;font-size:17px;font-weight:600;margin-bottom:7px;}
+  .costcard p{font-size:13.5px;margin-bottom:6px;}
+  .costcard ul{list-style:none;font-size:13.5px;margin-bottom:6px;}
+  .costcard li{padding-left:16px;position:relative;margin-bottom:6px;}
+  .costcard li::before{content:"›";position:absolute;left:2px;font-weight:700;}
+  .costcard .fine{font-size:12px;color:var(--muted);margin-bottom:0;}
+  .costcard.green{background:#eaf6ee;border-color:#1e7a45;}
+  .costcard.green h3{color:#1e7a45;} .costcard.green li::before{color:#1e7a45;}
+  .costcard.blue{background:var(--pill-s);border-color:var(--pill);}
+  .costcard.blue h3{color:var(--pill);} .costcard.blue li::before{color:var(--pill);}
+  .costcard.navy{background:#eef1f6;border-color:var(--navy);}
+  .costcard.navy h3{color:var(--navy);} .costcard.navy li::before{color:var(--navy);}
+
+  .acc{border:1.5px solid var(--rule);border-radius:14px;margin-bottom:11px;overflow:hidden;background:#fff;}
+  .acc summary{list-style:none;padding:15px 16px;cursor:pointer;display:flex;align-items:center;gap:12px;font-weight:600;font-size:15px;}
+  .acc summary::-webkit-details-marker{display:none;}
+  .acc summary .ic{width:8px;height:30px;border-radius:5px;flex-shrink:0;}
+  .acc summary .chev{margin-left:auto;color:var(--muted);transition:transform .2s;}
+  .acc[open] summary .chev{transform:rotate(180deg);}
+  .acc .body{padding:0 16px 16px;font-size:13.5px;}
+  .acc .row{display:flex;justify-content:space-between;gap:12px;padding:8px 0;border-top:1px solid var(--rule);}
+  .acc .row .k{color:var(--muted);flex-shrink:0;}
+  .acc .row .v{text-align:right;font-weight:500;}
+  .ico-p{background:var(--pill);} .ico-a{background:var(--apre);} .ico-y{background:var(--yez);}
+
+  .faq{border-bottom:1px solid var(--rule);}
+  .faq summary{padding:14px 2px;font-weight:600;font-size:14.5px;cursor:pointer;list-style:none;display:flex;gap:10px;align-items:flex-start;}
+  .faq summary::-webkit-details-marker{display:none;}
+  .faq summary .q{color:var(--accent);font-weight:800;}
+  .faq p{padding:0 2px 14px 22px;font-size:13.5px;color:var(--muted);}
+  .faq p b{color:var(--ink);}
+
+  .pill-row{display:flex;gap:7px;flex-wrap:wrap;margin:14px 0;}
+  .pill{font-size:12px;padding:6px 12px;border-radius:20px;background:#fff;border:1px solid var(--rule);font-weight:500;}
+  .disclaimer{margin-top:22px;padding:13px 15px;background:#f4f2ec;border:1px solid var(--rule);border-radius:12px;font-size:12px;line-height:1.5;color:var(--muted);}
+  .disclaimer b{color:var(--ink);}
+
+  .disc{font-size:11.5px;color:var(--muted);text-align:center;padding:18px 8px 4px;line-height:1.5;}
+  .restart{text-align:center;margin-top:10px;}
+  .restart button{background:none;border:none;color:var(--accent);font-weight:600;font-size:14px;cursor:pointer;text-decoration:underline;}
+  .navrow{display:flex;gap:10px;margin-top:8px;}
+  .back{flex:0 0 56px;background:transparent;border:1.5px solid var(--rule);color:var(--muted);font-size:20px;border-radius:14px;cursor:pointer;}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="brand">Find Your PrEP</div>
+  <div class="progress"><span id="bar"></span></div>
+</div>
+
+<!-- INTRO -->
+<section class="screen active" id="s-intro">
+  <h1>Which type of PrEP fits your life?</h1>
+  <p class="lede">PrEP is FDA-approved medicine that lowers the risk of getting HIV from sex by about 99%. There are four options: two daily pills and two shots. Answer a few quick questions and we'll show what fits, then bring it to your provider.</p>
+  <div class="pill-row">
+    <span class="pill">2 daily pills</span>
+    <span class="pill">2 injections</span>
+    <span class="pill">About 1 minute</span>
+  </div>
+  <button class="btn" onclick="go('q1')">Start <span style="opacity:.6">›</span></button>
+  <button class="btn ghost" onclick="go('compare')">Just show me all four options</button>
+  <button class="btn ghost" onclick="go('compare');setTimeout(function(){document.getElementById('faq-sec').scrollIntoView({behavior:'smooth'});},350);">Already on PrEP? Jump to common questions ›</button>
+  <div class="disclaimer">
+    <b>Please note:</b> This is a prototype tool for information only, not official medical advice. It collects no data and can't track who uses it. Your answers stay on your phone. Always talk with a healthcare provider before making a decision.
+  </div>
+</section>
+
+<!-- Q1 form -->
+<section class="screen" id="s-q1">
+  <div class="qcount">Question 1 of 6</div>
+  <h2>Would you rather take a pill or get a shot?</h2>
+  <p class="lede" style="margin-bottom:16px;">There's no wrong answer. It's about what suits you.</p>
+  <div data-q="form">
+    <button class="opt" data-v="pill"><span class="ic m-pill"></span><span class="tx"><b>Take a daily pill</b><small>Manage it yourself, at home</small></span></button>
+    <button class="opt" data-v="inj"><span class="ic m-shot"></span><span class="tx"><b>Get a shot at the clinic</b><small>No daily pills to remember</small></span></button>
+    <button class="opt skip" data-v="either"><span class="ic"></span><span class="tx"><b>I'm open to either</b><small>Show me what fits best overall</small></span></button>
+  </div>
+</section>
+
+<!-- Q2 freq -->
+<section class="screen" id="s-q2">
+  <div class="qcount">Question 2 of 6</div>
+  <h2>What's easiest for you to keep up with?</h2>
+  <p class="lede" style="margin-bottom:16px;">Sticking with PrEP is what keeps it working.</p>
+  <div data-q="freq">
+    <button class="opt" data-v="daily"><span class="ic m-pill"></span><span class="tx"><b>A daily routine</b><small>I'm good at daily habits</small></span></button>
+    <button class="opt" data-v="visits"><span class="ic m-apre"></span><span class="tx"><b>Clinic visits, not daily pills</b><small>Getting to the office 6× a year is fine</small></span></button>
+    <button class="opt" data-v="rare"><span class="ic m-yez"></span><span class="tx"><b>As few visits as possible</b><small>Fewest visits once I'm past the start</small></span></button>
+  </div>
+  <div class="navrow"><button class="back" onclick="go('q1')">‹</button></div>
+</section>
+
+<!-- Q3 comfort/privacy -->
+<section class="screen" id="s-q3">
+  <div class="qcount">Question 3 of 6</div>
+  <h2>Where would a daily medication fit into your life?</h2>
+  <p class="lede" style="margin-bottom:16px;">Everyone's living situation and routine is different.</p>
+  <div data-q="privacy">
+    <button class="opt" data-v="low"><span class="ic m-pill"></span><span class="tx"><b>I have a private, reliable spot for it</b><small>Keeping and taking a daily pill works for me</small></span></button>
+    <button class="opt" data-v="high"><span class="ic m-shot"></span><span class="tx"><b>A daily medication would be hard to manage</b><small>I'd rather not have something to keep track of at home</small></span></button>
+    <button class="opt skip" data-v="skip"><span class="ic"></span><span class="tx"><b>No strong feelings either way</b><small>Doesn't matter to me</small></span></button>
+  </div>
+  <div class="navrow"><button class="back" onclick="go('q2')">‹</button></div>
+</section>
+
+<!-- Q4 needles -->
+<section class="screen" id="s-q4">
+  <div class="qcount">Question 4 of 6</div>
+  <h2>How do you feel about needles?</h2>
+  <p class="lede" style="margin-bottom:16px;">The shots are quick, but comfort matters.</p>
+  <div data-q="needle">
+    <button class="opt" data-v="ok"><span class="ic m-shot"></span><span class="tx"><b>Totally fine with them</b><small>A shot doesn't bother me</small></span></button>
+    <button class="opt" data-v="averse"><span class="ic m-pill"></span><span class="tx"><b>I'd really rather avoid needles</b><small>Pills sound better to me</small></span></button>
+    <button class="opt skip" data-v="skip"><span class="ic"></span><span class="tx"><b>No strong feelings</b><small>Either way works</small></span></button>
+  </div>
+  <div class="navrow"><button class="back" onclick="go('q3')">‹</button></div>
+</section>
+
+<!-- Q5 clinic access -->
+<section class="screen" id="s-q5">
+  <div class="qcount">Question 5 of 6</div>
+  <h2>How easy is it to get to a clinic?</h2>
+  <p class="lede" style="margin-bottom:16px;">Shots are given in a provider's office.</p>
+  <div data-q="access">
+    <button class="opt" data-v="easy"><span class="ic m-apre"></span><span class="tx"><b>Pretty easy</b><small>I can get there when I need to</small></span></button>
+    <button class="opt" data-v="hard"><span class="ic m-yez"></span><span class="tx"><b>It's a challenge</b><small>Fewer visits would really help</small></span></button>
+    <button class="opt skip" data-v="skip"><span class="ic"></span><span class="tx"><b>Somewhere in between</b><small>No strong preference</small></span></button>
+  </div>
+  <div class="navrow"><button class="back" onclick="go('q4')">‹</button></div>
+</section>
+
+<!-- Q6 eligibility (AFB) -->
+<section class="screen" id="s-q6">
+  <div class="qcount">Question 6 of 6</div>
+  <h2>One last question about what's approved for you.</h2>
+  <p class="lede" style="margin-bottom:16px;">This helps us flag which options fit. Your answers stay on your phone. Nothing is saved or sent.</p>
+  <div data-q="bio">
+    <button class="opt" data-v="afb"><span class="ic m-pill"></span><span class="tx"><b>I was assigned female at birth &amp; may have vaginal sex</b><small>Affects which pill is approved</small></span></button>
+    <button class="opt" data-v="other"><span class="ic m-navy"></span><span class="tx"><b>That doesn't apply to me</b><small>Continue</small></span></button>
+    <button class="opt skip" data-v="skip"><span class="ic"></span><span class="tx"><b>Prefer not to say</b><small>Show all options</small></span></button>
+  </div>
+  <div class="navrow"><button class="back" onclick="go('q5')">‹</button></div>
+</section>
+
+<!-- RESULT -->
+<section class="screen" id="s-result">
+  <h1 style="margin-bottom:4px;">Worth discussing with your provider</h1>
+  <p class="lede">Based on your answers. This isn't a prescription or medical advice. Your provider makes the final call.</p>
+  <div id="results"></div>
+  <div id="resflag"></div>
+  <div class="costnote">
+    <h3>Worried about cost?</h3>
+    <p>Most people pay <b>$0</b> for PrEP. Under the Affordable Care Act, most private insurance, Medicaid, and Medicare must cover PrEP (medication, visits, and labs) with no copay. If you're uninsured or get charged anyway, assistance programs can cover most or all of the cost.</p>
+    <button class="btn ghost" style="margin-top:4px;" onclick="go('compare');setTimeout(function(){document.getElementById('cost-sec').scrollIntoView({behavior:'smooth'});},350);">See cost &amp; assistance options ›</button>
+  </div>
+  <button class="btn" onclick="go('compare')">Compare all four in detail</button>
+  <div class="restart"><button onclick="restart()">↺ Start over</button></div>
+</section>
+
+<!-- COMPARE -->
+<section class="screen" id="s-compare">
+  <h1>The four PrEP options</h1>
+  <p class="lede">Tap any option to see the details. All four work well when used as prescribed.</p>
+
+  <details class="acc">
+    <summary><span class="ic ico-p"></span> Truvada / Descovy <span style="font-weight:400;color:var(--muted);font-size:13px;">· daily pill</span><span class="chev">⌄</span></summary>
+    <div class="body">
+      <div class="row"><span class="k">How</span><span class="v">One pill by mouth</span></div>
+      <div class="row"><span class="k">How often</span><span class="v">Every day</span></div>
+      <div class="row"><span class="k">Where</span><span class="v">Anywhere</span></div>
+      <div class="row"><span class="k">Side effects</span><span class="v">Headache, nausea, stomach upset; small early kidney/bone marker changes</span></div>
+      <div class="row"><span class="k">Labs</span><span class="v">HIV test before starting + every 3 months</span></div>
+      <div class="row"><span class="k">Note</span><span class="v">Descovy isn't for people assigned female at birth at risk through vaginal sex</span></div>
+    </div>
+  </details>
+
+  <details class="acc">
+    <summary><span class="ic ico-a"></span> Apretude <span style="font-weight:400;color:var(--muted);font-size:13px;">· every 2 months</span><span class="chev">⌄</span></summary>
+    <div class="body">
+      <div class="row"><span class="k">How</span><span class="v">Shot in buttock muscle, by a provider</span></div>
+      <div class="row"><span class="k">How often</span><span class="v">Every 2 months, after the starter shots</span></div>
+      <div class="row"><span class="k">Getting started</span><span class="v">2 starter shots 1 month apart, then 1 injection every 2 months</span></div>
+      <div class="row"><span class="k">Where</span><span class="v">Clinic / provider's office</span></div>
+      <div class="row"><span class="k">Side effects</span><span class="v">Injection-site pain, headache, nausea</span></div>
+      <div class="row"><span class="k">Labs</span><span class="v">HIV test with every injection</span></div>
+    </div>
+  </details>
+
+  <details class="acc">
+    <summary><span class="ic ico-y"></span> Yeztugo <span style="font-weight:400;color:var(--muted);font-size:13px;">· every 6 months</span><span class="chev">⌄</span></summary>
+    <div class="body">
+      <div class="row"><span class="k">How</span><span class="v">Shot under the skin, by a provider</span></div>
+      <div class="row"><span class="k">How often</span><span class="v">Every 6 months (the first dose is different, see below)</span></div>
+      <div class="row"><span class="k">Getting started</span><span class="v">Day 1: 2 pills + 2 injections in office. Day 2: 2 pills at home. Then 2 injections every 6 months</span></div>
+      <div class="row"><span class="k">Where</span><span class="v">Clinic / provider's office</span></div>
+      <div class="row"><span class="k">Side effects</span><span class="v">Injection-site reaction (lump, swelling, redness); headache, nausea</span></div>
+      <div class="row"><span class="k">Labs</span><span class="v">HIV test with every injection</span></div>
+    </div>
+  </details>
+
+  <h2 id="cost-sec" style="margin-top:26px;">What about cost?</h2>
+  <p class="lede" style="margin-bottom:14px;">The list prices you might see online are <b>not</b> what most people pay. Here's how it actually works.</p>
+
+  <div class="costcard green">
+    <h3>If you have insurance</h3>
+    <p>Most private plans, Medicaid, and Medicare are required to cover PrEP, including your medication, clinic visits, and lab tests, with <b>no copay or deductible</b>, because it's a federally protected preventive service.</p>
+    <p class="fine">Note: some people still get billed by mistake. If that happens, you have the right to appeal, and a clinic PrEP navigator can help.</p>
+  </div>
+
+  <div class="costcard blue">
+    <h3>If you're uninsured or underinsured</h3>
+    <ul>
+      <li><b>Free-medication programs:</b> the makers of these drugs offer programs that provide PrEP at no cost for people under a certain income (no Social Security number required for some).</li>
+      <li><b>Copay assistance:</b> if you have private insurance but still face costs, manufacturer copay programs can cover a large share of out-of-pocket medication costs. (These usually don't apply to Medicaid/Medicare.)</li>
+      <li><b>Clinics &amp; health centers:</b> community health centers, Ryan White clinics, and local health departments offer PrEP (including labs and visits) on sliding scales that can reach $0.</li>
+    </ul>
+    <p class="fine">Most assistance programs cover the medication but not always your visits and labs. A clinic can help you cover those too.</p>
+  </div>
+
+  <div class="costcard navy">
+    <h3>The simplest first step</h3>
+    <p>Ask any sexual-health clinic about their <b>PrEP navigation services</b>. Navigators handle this paperwork every day, know which program fits your situation, and can often get your cost to $0, before you ever assume you can't afford it.</p>
+  </div>
+
+  <h2 id="faq-sec" style="margin-top:26px;">Common questions</h2>
+  <details class="faq"><summary><span class="q">Q</span> What if I miss a dose or shot?</summary><p><b>Daily pills:</b> take it as soon as you remember. Missing doses lowers protection, especially if you were assigned female at birth. Call your provider if you've missed more than 4 pills in your prescription. <b>Apretude:</b> there's a ±1 week window around your due date. <b>Yeztugo:</b> there's a ±2 week window. If you're late for a shot, call your clinic.</p></details>
+  <details class="faq"><summary><span class="q">Q</span> Can I stop PrEP? What happens?</summary><p>Yes, anytime, but tell your provider before stopping. The medicine takes time to leave your body, so continue HIV testing for up to a year after your last doses, and switch to another prevention method if you're still at risk. You can restart whenever you need to.</p></details>
+  <details class="faq"><summary><span class="q">Q</span> Who can take PrEP?</summary><p>Anyone age 12 or older, weighing at least ~77 lbs (35 kg), who is HIV-negative at the start and tested before each dose. One exception: Descovy isn't approved for people assigned female at birth who are at risk through vaginal sex. Truvada, Apretude, and Yeztugo are all options.</p></details>
+  <details class="faq"><summary><span class="q">Q</span> Does PrEP prevent other STIs?</summary><p>No. PrEP only prevents HIV. Condoms and other methods protect against other sexually transmitted infections. Ask your provider about combining them.</p></details>
+  <details class="faq"><summary><span class="q">Q</span> Will other medicines interfere?</summary><p>A few drugs can interact with PrEP. Bring a full list of everything you take, including supplements, to your visit so your provider can check.</p></details>
+  <details class="faq"><summary><span class="q">Q</span> Is the newest shot harder to get covered?</summary><p>Sometimes. Because Yeztugo is new and expensive, some insurers and pharmacy plans are slower to cover it than the pill or the 2-month shot. If cost or coverage is a concern, a PrEP navigator can tell you which option is most affordable for your specific plan.</p></details>
+
+  <div class="restart"><button onclick="go('intro')">↺ Back to start</button></div>
+  <p class="disc">For information only. Not medical advice or a prescription. Eligibility: age 12+, ~77 lbs (35 kg)+, HIV-negative at start. Sources: CDC PrEP Guideline (2021) &amp; MMWR 2025;74(35); Truvada, Descovy &amp; Yeztugo Prescribing Information (Gilead, 2022–2025); Apretude Prescribing Information (ViiV, 2023); PURPOSE 1 &amp; 2 trials (NEJM 2024–2025).</p>
+</section>
+
+<script>
+  var ans={form:null,freq:null,privacy:null,needle:null,access:null,bio:null};
+  var seq=['intro','q1','q2','q3','q4','q5','q6','result','compare'];
+  var stepOf={q1:1,q2:2,q3:3,q4:4,q5:5,q6:6};
+  function bar(k){var s=stepOf[k]||(k==='result'||k==='compare'?6:0);document.getElementById('bar').style.width=(s/6*100)+'%';}
+  function go(k){
+    document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active');});
+    document.getElementById('s-'+k).classList.add('active');
+    bar(k);window.scrollTo(0,0);
+  }
+  document.querySelectorAll('[data-q] .opt').forEach(function(b){
+    b.addEventListener('click',function(){
+      var grp=b.parentElement.getAttribute('data-q');
+      ans[grp]=b.getAttribute('data-v');
+      var nxt={form:'q2',freq:'q3',privacy:'q4',needle:'q5',access:'q6'}[grp];
+      if(nxt){go(nxt);}else{score();go('result');}
+    });
+  });
+
+  var DATA={
+    pill:{cls:'cp',name:'Truvada / Descovy',gen:'daily pill',freq:'One pill, every day',
+      pts:['Take it yourself at home, anywhere','~99% effective when taken daily','You manage it privately, on your own schedule']},
+    apretude:{cls:'ca',name:'Apretude',gen:'injection (cabotegravir)',freq:'After 2 starter shots, one shot every 2 months',
+      pts:['No daily pills to remember','Starts with 2 shots a month apart, then every 2 months','Each visit includes your HIV test']},
+    yeztugo:{cls:'cy',name:'Yeztugo',gen:'injection (lenacapavir)',freq:'After the starter dose, one shot every 6 months',
+      pts:['Starts with pills + a shot, then 2 injections at one visit every 6 months','Shot under the skin at a clinic','Longest-lasting option, fewest visits once you\'re going']}
+  };
+
+  function score(){
+    var s={pill:0,apretude:0,yeztugo:0};
+    // Q1 form
+    if(ans.form==='pill') s.pill+=3;
+    if(ans.form==='inj'){s.apretude+=2;s.yeztugo+=2;}
+    if(ans.form==='either'){s.pill++;s.apretude++;s.yeztugo++;}
+    // Q2 frequency
+    if(ans.freq==='daily') s.pill+=2;
+    if(ans.freq==='visits') s.apretude+=2;
+    if(ans.freq==='rare') s.yeztugo+=3;
+    // Q3 privacy
+    if(ans.privacy==='high'){s.apretude+=2;s.yeztugo+=2;}
+    if(ans.privacy==='low') s.pill+=1;
+    // Q4 needles
+    if(ans.needle==='ok'){s.apretude++;s.yeztugo++;}
+    if(ans.needle==='averse') s.pill+=3;
+    // Q5 clinic access
+    if(ans.access==='easy') s.apretude++;
+    if(ans.access==='hard'){s.yeztugo+=2;s.pill++;}
+    // Q6 eligibility note (handled in flag, doesn't zero out the combined pill column)
+
+    var arr=Object.keys(s).map(function(k){return {k:k,v:s[k]};});
+    arr.sort(function(a,b){return b.v-a.v;});
+    var top=arr.slice(0,2);
+
+    var html='';
+    top.forEach(function(x,i){
+      var d=DATA[x.k];
+      html+='<div class="rescard '+d.cls+(i===0?' match':'')+'">';
+      html+='<span class="tag">'+(i===0?'Best fit for you':'Also worth a look')+'</span>';
+      html+='<h3>'+d.name+' <span class="gen">'+d.gen+'</span></h3>';
+      html+='<div class="freq">'+d.freq+'</div><ul>';
+      d.pts.forEach(function(p){html+='<li>'+p+'</li>';});
+      html+='</ul></div>';
+    });
+    document.getElementById('results').innerHTML=html;
+
+    var f='';
+    if(ans.bio==='afb' && (top[0].k==='pill'||top[1].k==='pill')){
+      f+='<div class="flag blue"><b>About the daily pill:</b> If you were assigned female at birth and may have vaginal sex, <b>Truvada</b> is the right pill for you. Descovy isn\'t approved for that, since it wasn\'t studied in that group. Apretude and Yeztugo are also options. Your provider can confirm.</div>';
+    }
+    f+='<div class="flag"><b>Remember:</b> PrEP doesn\'t prevent other STIs, and these results are a starting point for a conversation, not a prescription.</div>';
+    document.getElementById('resflag').innerHTML=f;
+  }
+  function restart(){ans={form:null,freq:null,privacy:null,needle:null,access:null,bio:null};go('q1');}
+</script>
+</body>
+</html>
