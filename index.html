@@ -107,6 +107,8 @@
 
   .pill-row{display:flex;gap:7px;flex-wrap:wrap;margin:14px 0;}
   .pill{font-size:12px;padding:6px 12px;border-radius:20px;background:#fff;border:1px solid var(--rule);font-weight:500;}
+  .disclaimer{margin-top:22px;padding:13px 15px;background:#f4f2ec;border:1px solid var(--rule);border-radius:12px;font-size:12px;line-height:1.5;color:var(--muted);}
+  .disclaimer b{color:var(--ink);}
 
   .disc{font-size:11.5px;color:var(--muted);text-align:center;padding:18px 8px 4px;line-height:1.5;}
   .restart{text-align:center;margin-top:10px;}
@@ -133,6 +135,10 @@
   </div>
   <button class="btn" onclick="go('q1')">Start <span style="opacity:.6">›</span></button>
   <button class="btn ghost" onclick="go('compare')">Just show me all four options</button>
+  <button class="btn ghost" onclick="go('compare');setTimeout(function(){document.getElementById('faq-sec').scrollIntoView({behavior:'smooth'});},350);">Already on PrEP? Jump to common questions ›</button>
+  <div class="disclaimer">
+    <b>Please note:</b> This is a prototype tool for information only, not official medical advice. It collects no data and can't track who uses it. Your answers stay on your phone. Always talk with a healthcare provider before making a decision.
+  </div>
 </section>
 
 <!-- Q1 form -->
@@ -163,12 +169,12 @@
 <!-- Q3 comfort/privacy -->
 <section class="screen" id="s-q3">
   <div class="qcount">Question 3 of 6</div>
-  <h2>How important is keeping PrEP private at home?</h2>
-  <p class="lede" style="margin-bottom:16px;">Some people prefer nothing others might find.</p>
+  <h2>Where would a daily medication fit into your life?</h2>
+  <p class="lede" style="margin-bottom:16px;">Everyone's living situation and routine is different.</p>
   <div data-q="privacy">
-    <button class="opt" data-v="high"><span class="ic m-shot"></span><span class="tx"><b>Very important</b><small>I'd rather have no pills to store or be seen</small></span></button>
-    <button class="opt" data-v="low"><span class="ic m-pill"></span><span class="tx"><b>Not a concern</b><small>I'm comfortable managing pills privately</small></span></button>
-    <button class="opt skip" data-v="skip"><span class="ic"></span><span class="tx"><b>No preference</b><small>Doesn't matter to me</small></span></button>
+    <button class="opt" data-v="low"><span class="ic m-pill"></span><span class="tx"><b>I have a private, reliable spot for it</b><small>Keeping and taking a daily pill works for me</small></span></button>
+    <button class="opt" data-v="high"><span class="ic m-shot"></span><span class="tx"><b>A daily medication would be hard to manage</b><small>I'd rather not have something to keep track of at home</small></span></button>
+    <button class="opt skip" data-v="skip"><span class="ic"></span><span class="tx"><b>No strong feelings either way</b><small>Doesn't matter to me</small></span></button>
   </div>
   <div class="navrow"><button class="back" onclick="go('q2')">‹</button></div>
 </section>
@@ -292,7 +298,7 @@
     <p>Ask any sexual-health clinic about their <b>PrEP navigation services</b>. Navigators handle this paperwork every day, know which program fits your situation, and can often get your cost to $0, before you ever assume you can't afford it.</p>
   </div>
 
-  <h2 style="margin-top:26px;">Common questions</h2>
+  <h2 id="faq-sec" style="margin-top:26px;">Common questions</h2>
   <details class="faq"><summary><span class="q">Q</span> What if I miss a dose or shot?</summary><p><b>Daily pills:</b> take it as soon as you remember. Missing doses lowers protection, especially if you were assigned female at birth. Call your provider if you've missed more than 4 pills in your prescription. <b>Apretude:</b> there's a ±1 week window around your due date. <b>Yeztugo:</b> there's a ±2 week window. If you're late for a shot, call your clinic.</p></details>
   <details class="faq"><summary><span class="q">Q</span> Can I stop PrEP? What happens?</summary><p>Yes, anytime, but tell your provider before stopping. The medicine takes time to leave your body, so continue HIV testing for up to a year after your last doses, and switch to another prevention method if you're still at risk. You can restart whenever you need to.</p></details>
   <details class="faq"><summary><span class="q">Q</span> Who can take PrEP?</summary><p>Anyone age 12 or older, weighing at least ~77 lbs (35 kg), who is HIV-negative at the start and tested before each dose. One exception: Descovy isn't approved for people assigned female at birth who are at risk through vaginal sex. Truvada, Apretude, and Yeztugo are all options.</p></details>
